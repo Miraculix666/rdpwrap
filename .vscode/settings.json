@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "*.pas": "pascal",
+        "*.dpr": "pascal",
+        "*.dfm": "pascal",
+        "*.cpp": "cpp",
+        "*.h": "cpp",
+        "*.ini": "ini",
+        "*.bat": "bat"
+    },
+    "C_Cpp.default.cppStandard": "c++14",
+    "[pascal]": {
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[cpp]": {
+        "editor.tabSize": 2
+    }
+}

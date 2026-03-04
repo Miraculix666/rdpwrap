@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "alefragnani.pascal",
+        "alefragnani.pascal-formatter",
+        "eamodio.gitlens",
+        "editorconfig.editorconfig"
+    ]
+}
