@@ -18,9 +18,9 @@ OK="✅"; WARN="🟡"; FAIL="❌"; INFO="🔵"; LOCK="🔒"
 PASS=0; WARNINGS=0; FAILURES=0
 
 # ── Helpers ──────────────────────────────────────────────────
-pass()  { echo -e "${GREEN}${OK} $1${NC}"; ((PASS++)); }
-warn()  { echo -e "${YELLOW}${WARN} $1${NC}"; ((WARNINGS++)); }
-fail()  { echo -e "${RED}${FAIL} $1${NC}"; ((FAILURES++)); }
+pass()  { echo -e "${GREEN}${OK} $1${NC}"; ((PASS++)) || true; }
+warn()  { echo -e "${YELLOW}${WARN} $1${NC}"; ((WARNINGS++)) || true; }
+fail()  { echo -e "${RED}${FAIL} $1${NC}"; ((FAILURES++)) || true; }
 info()  { echo -e "${BLUE}${INFO} $1${NC}"; }
 header(){ echo -e "\n${BOLD}${CYAN}$1${NC}"; echo "$(printf '─%.0s' {1..55})"; }
 
@@ -72,7 +72,7 @@ if command -v python3 &>/dev/null; then
   if python3 -c "import json; json.load(open('$LOCK_FILE'))" 2>/dev/null; then
     pass ".locked is valid JSON"
     NOW=$(date +%s)
-    eval "$(python3 -c "
+    mapfile -t stats <<< "$(python3 -c "
 import json, datetime
 try:
     with open('$LOCK_FILE') as f:
@@ -86,13 +86,17 @@ try:
             exp = datetime.datetime.fromisoformat(l['expires_at'].replace('Z','+00:00'))
             if exp.timestamp() < $NOW:
                 stale.append(l['id'])
-    print(f\"LOCK_COUNT={len(locks)}\")
-    print(f\"HARD_COUNT={hard}\")
-    print(f\"SOFT_COUNT={soft}\")
-    print(f\"STALE='{','.join(stale)}'\")
+    print(len(locks))
+    print(hard)
+    print(soft)
+    print(','.join(stale))
 except Exception:
     pass
 ")"
+    LOCK_COUNT="${stats[0]:-0}"
+    HARD_COUNT="${stats[1]:-0}"
+    SOFT_COUNT="${stats[2]:-0}"
+    STALE="${stats[3]:-}"
     info "Total locks: $LOCK_COUNT (${RED}HARD: $HARD_COUNT${NC}${BLUE}, SOFT: $SOFT_COUNT${NC})"
     if [[ -z "$STALE" ]]; then
       pass "No stale locks detected"
