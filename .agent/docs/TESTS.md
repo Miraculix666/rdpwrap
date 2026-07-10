@@ -66,8 +66,8 @@
 | Test | Type | Status |
 |---|---|---|
 | Lock acquisition | Unit | 🟢 DONE |
-| Lock release | Unit | ⚪ TODO |
-| Stale lock detection | Unit | ⚪ TODO |
+| Lock release | Unit | 🟢 DONE |
+| Stale lock detection | Unit | 🟢 DONE |
 | Concurrent lock conflict | Integration | ⚪ TODO |
 
 ---
@@ -101,6 +101,8 @@ bash scripts/health-check.sh
 | 2026-02-23 | Initial TESTS.md created | — | system-init |
 | 2026-06-26 | Added unit tests for lock acquisition in lock-manager.sh | `lock-manager.sh` | jules |
 | 2026-07-03 | Added unit tests for no stale SOFT locks check in health-check.sh | `health-check.sh` | jules |
+| 2026-07-10 | Added unit test for lock-manager.sh release with missing lock | `lock-manager.sh` | jules |
+| 2026-07-10 | Added unit test for stale lock detection in lock-manager.sh | `lock-manager.sh` | jules |
 
 ---
 
@@ -111,3 +113,6 @@ bash scripts/health-check.sh
 - Mock strategy prompt: `prompts.config.md` → `mock-strategy`
 
 *Always update coverage table after adding/removing tests. Cascade check: CHANGELOG.md*
+
+## Test Change Log
+- Added HA blueprints for Tibber Pool Pump control. Yamllint validation passed. No dedicated python/shell tests for these files as they are YAML blueprints, but verified the structural validity and logic according to HA standards.
