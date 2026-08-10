@@ -33,7 +33,7 @@ if command -v md5sum &>/dev/null || command -v md5 &>/dev/null; then
   command -v md5 &>/dev/null && HASH_CMD="md5 -r"
   
   DUPES=$(find . -not -path './.git/*' -type f -exec $HASH_CMD {} + 2>/dev/null | \
-    sort | awk 'BEGIN{p=""} {if($1==p){print $2} p=$1}' | head -20)
+    sort | awk 'BEGIN{p=""} {if($1==p){print $2} p=$1}' | head -20 || true)
   
   if [[ -z "$DUPES" ]]; then
     echo -e "${GREEN}✅ No duplicate files detected${NC}"
@@ -51,7 +51,7 @@ fi
 echo ""
 echo -e "${BOLD}[2/5] 📏 Large File Detection (>50KB)${NC}"
 echo "$(printf '─%.0s' {1..50})"
-LARGE_FILES=$(find . -not -path './.git/*' -type f -size +50k 2>/dev/null | head -20)
+LARGE_FILES=$(find . -not -path './.git/*' -type f -size +50k 2>/dev/null | head -20 || true)
 if [[ -z "$LARGE_FILES" ]]; then
   echo -e "${GREEN}✅ No unexpectedly large files${NC}"
 else
@@ -104,7 +104,8 @@ echo -e "${BOLD}[5/5] 🔄 Consolidation Session Counter Update${NC}"
 echo "$(printf '─%.0s' {1..50})"
 CONTEXT_FILE=".agent/memory/CONTEXT.md"
 if [[ -f "$CONTEXT_FILE" ]]; then
-  CURRENT=$(grep -o "Sessions Since Last Consolidation Review.*" "$CONTEXT_FILE" | grep -o '[0-9]*' | head -1 || echo "0")
+  CURRENT=$(sed -n '/Sessions Since Last Consolidation Review/{s/[^0-9]*\([0-9][0-9]*\).*/\1/p;q;}' "$CONTEXT_FILE")
+  CURRENT="${CURRENT:-0}"
   echo -e "${BLUE}ℹ️ Previous count: $CURRENT${NC}"
   if [[ "${1:-}" != "--report-only" ]]; then
     sed -i.bak "s/Sessions Since Last Consolidation Review.*/Sessions Since Last Consolidation Review | 0/" "$CONTEXT_FILE" && rm -f "${CONTEXT_FILE}.bak"
